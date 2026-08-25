@@ -43,6 +43,10 @@ export function SithomasDashboard({ logoUrl }: { logoUrl?: string }) {
       if (role) window.localStorage.setItem('sithomas-role', role)
       else window.localStorage.removeItem('sithomas-role')
     } catch { }
+    try {
+      // notify other components (GlobalImport) about role changes in same window
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('sithomas:role-changed', { detail: role }))
+    } catch {}
   }, [role])
   const visible = useMemo(() => people.filter((p) => (role === 'admin' || p.No_KK === familyKK) && (section !== 'keluarga' || p.Hubungan_Keluarga === 'Kepala Keluarga') && Object.values(p).join(' ').toLowerCase().includes(query.toLowerCase())), [people, role, familyKK, query, section])
   const families = new Set(people.map((p) => p.No_KK)).size

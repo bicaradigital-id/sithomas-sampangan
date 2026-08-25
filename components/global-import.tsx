@@ -13,6 +13,11 @@ export default function GlobalImport() {
     } catch {
       setIsAdmin(false)
     }
+    const onRole = (e: any) => {
+      try { setIsAdmin(e?.detail === 'admin') } catch { }
+    }
+    window.addEventListener('sithomas:role-changed', onRole)
+    return () => window.removeEventListener('sithomas:role-changed', onRole)
   }, [])
   if (!isAdmin) return null
   return (
