@@ -36,7 +36,7 @@ export function SithomasDashboard({ logoUrl }: { logoUrl?: string }) {
   function login(event: FormEvent) {
     event.preventDefault()
     if (loginMode === 'admin' && credential === 'admin' && password === 'admin123') setRole('admin')
-    if (loginMode === 'umat' && /^\\d{4}$/.test(credential)) {
+    if (loginMode === 'umat' && /^\d{4}$/.test(credential.trim())) {
       const match = people.find((person) => person.No_KK.endsWith(credential))
       if (match) { setFamilyKK(match.No_KK); setRole('umat') }
     }
