@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SITHOMAS - Pendataan Umat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #f6f1eb;
+      color: #2d241e;
+    }
+    .terracotta-card {
+      background: #ffffff;
+      border: 1px solid #ebdcd0;
+      box-shadow: 0 10px 30px -5px rgba(184, 80, 29, 0.05);
+    }
+    .btn-terracotta {
+      background-color: #b8501d;
+      color: #ffffff;
+    }
+    .btn-terracotta:hover {
+      background-color: #9c4115;
+    }
+    .bg-terracotta-soft {
+      background-color: #f7ece1;
+    }
+    .text-terracotta {
+      color: #b8501d;
+    }
+    .sidebar-active {
+      background-color: #b8501d;
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(184, 80, 29, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #d9c4b3;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body class="custom-scrollbar">
+
+  <!-- LOGIN SECTION -->
+  <div id="loginSection" class="min-h-screen flex items-center justify-center p-4 bg-[#f1e6da]">
+    <div class="terracotta-card w-full max-w-md p-8 rounded-3xl shadow-xl">
+      <div class="text-center mb-6">
+        <img src="https://drive.google.com/thumbnail?id=1D-D5vLZBRtcR5_msq279YU1iy1DDHedO&sz=w1000" alt="SITHOMAS Logo" class="h-20 mx-auto mb-3 object-contain">
+        <h1 class="text-3xl font-extrabold text-[#2d241e] tracking-tight">SITHOMAS</h1>
+        <p class="text-xs font-semibold text-[#8a7261] uppercase tracking-wider mt-1">Sistem Informasi Pendataan Umat</p>
+      </div>
+
+      <!-- Login Tabs -->
+      <div class="flex bg-[#e8dad0] p-1 rounded-2xl mb-6">
+        <button id="tabAdmin" onclick="switchLoginTab('admin')" class="flex-1 py-2.5 text-xs font-bold rounded-xl transition-all shadow-sm bg-white text-[#b8501d]">Admin Utama</button>
+        <button id="tabUmat" onclick="switchLoginTab('umat')" class="flex-1 py-2.5 text-xs font-bold rounded-xl transition-all text-[#736053]">Kepala Keluarga</button>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <input type="hidden" id="loginType" value="admin">
+        
+        <div id="fieldAdmin">
+          <label class="block text-xs font-bold text-[#5c4a3e] uppercase mb-1">Username Admin</label>
+          <input type="text" id="loginUsername" class="w-full px-4 py-3 rounded-xl border border-[#d9c4b3] bg-white focus:outline-none focus:ring-2 focus:ring-[#b8501d]/50" placeholder="Masukkan username">
+        </div>
+
+        <div id="fieldUmat" class="hidden">
+          <label class="block text-xs font-bold text-[#5c4a3e] uppercase mb-1">4 Digit Terakhir No KK</label>
+          <input type="text" maxlength="4" id="loginPin" class="w-full px-4 py-3 rounded-xl border border-[#d9c4b3] bg-white text-center tracking-widest text-xl font-bold focus:outline-none focus:ring-2 focus:ring-[#b8501d]/50" placeholder="Ex: 4637">
+        </div>
+
+        <div id="fieldPassword">
+          <label class="block text-xs font-bold text-[#5c4a3e] uppercase mb-1">Password</label>
+          <input type="password" id="loginPassword" class="w-full px-4 py-3 rounded-xl border border-[#d9c4b3] bg-white focus:outline-none focus:ring-2 focus:ring-[#b8501d]/50" placeholder="••••••••">
+        </div>
+
+        <button type="submit" id="btnLogin" class="w-full py-3.5 btn-terracotta font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+          <span>Masuk Aplikasi</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div id="appSection" class="hidden min-h-screen flex flex-col md:flex-row">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-[#fbf8f5] border-r border-[#ebdcd0] p-6 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center gap-3 mb-8 px-2">
+          <img src="https://drive.google.com/thumbnail?id=1D-D5vLZBRtcR5_msq279YU1iy1DDHedO&sz=w1000" class="h-10 w-10 object-contain">
+          <div>
+            <h2 class="font-bold text-lg text-[#2d241e] leading-tight">SITHOMAS</h2>
+            <span class="text-xs text-[#8a7261]">Gereja & Paroki</span>
+          </div>
+        </div>
+
+        <nav class="space-y-2">
+          <button onclick="navTo('dashboard')" id="navDashboard" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl sidebar-active transition-all">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+          </button>
+          <button onclick="navTo('members')" id="navMembers" class="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl text-[#5c4a3e] hover:bg-[#f3e7dc] transition-all">
+            <i data-lucide="users" class="w-4 h-4"></i> Data Keluarga & Umat
+          </button>
+        </nav>
+      </div>
+
+      <div class="pt-4 border-t border-[#ebdcd0]">
+        <div class="flex items-center gap-3 mb-4 px-2">
+          <div class="w-10 h-10 rounded-2xl bg-terracotta-soft text-[#b8501d] font-bold flex items-center justify-center text-base" id="userInitial">U</div>
+          <div class="overflow-hidden">
+            <div id="userName" class="text-xs font-bold text-[#2d241e] truncate">User</div>
+            <div id="userRoleBadge" class="text-[10px] text-[#8a7261] capitalize">Role</div>
+          </div>
+        </div>
+        <button onclick="logout()" class="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-xl transition-all">
+          <i data-lucide="log-out" class="w-4 h-4"></i> Keluar
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8 overflow-y-auto custom-scrollbar">
+      
+      <!-- DASHBOARD VIEW -->
+      <section id="viewDashboard" class="space-y-6">
+        <div>
+          <h1 class="text-2xl font-extrabold text-[#2d241e]">Ringkasan Pendataan</h1>
+          <p class="text-xs font-medium text-[#8a7261]">SITHOMAS Information & Statistics System</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="terracotta-card p-6 rounded-3xl flex items-center gap-4">
+            <div class="p-3 bg-terracotta-soft text-[#b8501d] rounded-2xl"><i data-lucide="users" class="w-6 h-6"></i></div>
+            <div>
+              <p class="text-[10px] font-bold text-[#8a7261] uppercase">Total Jiwa Umat</p>
+              <h3 class="text-2xl font-extrabold text-[#2d241e]" id="dashTotalUmat">0</h3>
+            </div>
+          </div>
+          <div class="terracotta-card p-6 rounded-3xl flex items-center gap-4">
+            <div class="p-3 bg-[#e3eedd] text-[#3d6e2e] rounded-2xl"><i data-lucide="home" class="w-6 h-6"></i></div>
+            <div>
+              <p class="text-[10px] font-bold text-[#8a7261] uppercase">Total Kartu Keluarga</p>
+              <h3 class="text-2xl font-extrabold text-[#2d241e]" id="dashTotalKK">0</h3>
+            </div>
+          </div>
+          <div class="terracotta-card p-6 rounded-3xl flex items-center gap-4">
+            <div class="p-3 bg-[#ede3f7] text-[#6b31a8] rounded-2xl"><i data-lucide="user-check" class="w-6 h-6"></i></div>
+            <div>
+              <p class="text-[10px] font-bold text-[#8a7261] uppercase">Kepala Keluarga</p>
+              <h3 class="text-2xl font-extrabold text-[#2d241e]" id="dashTotalKepala">0</h3>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEMBERS DATA VIEW -->
+      <section id="viewMembers" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 class="text-2xl font-extrabold text-[#2d241e]">Data Keluarga & Anggota</h1>
+            <p class="text-xs font-medium text-[#8a7261]">Kelola dan perbarui data keluarga terdaftar</p>
+          </div>
+          <button onclick="openModalMember()" class="px-5 py-2.5 btn-terracotta font-bold rounded-xl shadow-md flex items-center gap-2 text-xs">
+            <i data-lucide="plus" class="w-4 h-4"></i> Tambah Anggota
+          </button>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="terracotta-card p-4 rounded-2xl flex flex-col md:flex-row gap-3">
+          <div class="flex-1 relative">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3.5 text-[#8a7261]"></i>
+            <input type="text" id="searchInput" oninput="debounceSearch()" placeholder="Cari nama, No KK, atau profesi..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-[#d9c4b3] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#b8501d]/50">
+          </div>
+          <div id="filterKKContainer" class="w-full md:w-64">
+            <select id="filterKK" onchange="loadMembers(1)" class="w-full px-3 py-2.5 bg-white border border-[#d9c4b3] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#b8501d]/50">
+              <option value="">-- Semua Kartu Keluarga --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="terracotta-card rounded-3xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-[#f3e7dc] border-b border-[#ebdcd0] font-bold uppercase text-[#5c4a3e]">
+                <tr>
+                  <th class="p-4">No KK</th>
+                  <th class="p-4">Nama Lengkap & Baptis</th>
+                  <th class="p-4">Hubungan</th>
+                  <th class="p-4">Pendidikan & Pekerjaan</th>
+                  <th class="p-4">Profesi</th>
+                  <th class="p-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="memberTableBody" class="divide-y divide-[#f3e7dc]">
+                <!-- Data Rendered Here -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div class="p-4 border-t border-[#ebdcd0] flex flex-col sm:flex-row justify-between items-center gap-3">
+            <span id="pageInfo" class="text-xs text-[#8a7261]">Menampilkan 0 data</span>
+            <div class="flex items-center gap-2">
+              <button id="btnPrev" onclick="changePage(-1)" class="p-2 border border-[#d9c4b3] rounded-xl hover:bg-white disabled:opacity-50"><i data-lucide="chevron-left" class="w-4 h-4"></i></button>
+              <span id="currentPage" class="text-xs font-bold px-2">1</span>
+              <button id="btnNext" onclick="changePage(1)" class="p-2 border border-[#d9c4b3] rounded-xl hover:bg-white disabled:opacity-50"><i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL FORM MEMBER -->
+  <div id="modalMember" class="fixed inset-0 bg-[#2d241e]/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-[#ebdcd0]">
+      <div class="p-6 border-b border-[#ebdcd0] flex justify-between items-center bg-[#fbf8f5]">
+        <h3 class="font-bold text-base text-[#2d241e]" id="modalTitle">Tambah Anggota Keluarga</h3>
+        <button onclick="closeModalMember()" class="text-[#8a7261] hover:text-[#2d241e]"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="memberForm" onsubmit="handleSaveMember(event)" class="p-6 overflow-y-auto space-y-4 text-xs custom-scrollbar">
+        <input type="hidden" id="formId">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Nomor Kartu Keluarga (KK)</label>
+            <input type="text" id="formNoKK" required class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white" placeholder="16 Digit No KK">
+            <select id="formSelectKK" onchange="syncSelectedKK()" class="w-full mt-1.5 px-3 py-2 bg-[#f6f1eb] border border-[#d9c4b3] rounded-xl text-[11px]">
+              <option value="">-- Atau Pilih KK Terdaftar --</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Hubungan Keluarga</label>
+            <select id="formHubungan" required class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white">
+              <option value="Kepala Keluarga">Kepala Keluarga</option>
+              <option value="Istri">Istri</option>
+              <option value="Anak">Anak</option>
+              <option value="Mertua / Orang Tua">Mertua / Orang Tua</option>
+              <option value="Famili Lain">Famili Lain</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Nama Lengkap</label>
+            <input type="text" id="formNamaLengkap" required class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white" placeholder="Sesuai KTP">
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Nama Baptis</label>
+            <input type="text" id="formNamaBaptis" class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white" placeholder="Ex: Yohanes, Maria">
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Agama</label>
+            <select id="formAgama" class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white">
+              <option value="Katolik">Katolik</option>
+              <option value="Kristen Protestan">Kristen Protestan</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Status Perkawinan</label>
+            <select id="formStatusKawin" class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white">
+              <option value="Belum Kawin">Belum Kawin</option>
+              <option value="Kawin">Kawin</option>
+              <option value="Cerai Hidup">Cerai Hidup</option>
+              <option value="Cerai Mati">Cerai Mati</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Pendidikan Terakhir</label>
+            <select id="formPendidikan" class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white">
+              <option value="SD">SD</option>
+              <option value="SMP">SMP</option>
+              <option value="SMA/SMK">SMA/SMK</option>
+              <option value="Diploma (D3)">Diploma (D3)</option>
+              <option value="Sarjana (S1)">Sarjana (S1)</option>
+              <option value="Magister (S2)">Magister (S2)</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block font-bold text-[#5c4a3e] mb-1">Pekerjaan</label>
+            <input type="text" id="formPekerjaan" class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white" placeholder="PNS, Swasta, Pelajar">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block font-bold text-[#5c4a3e] mb-1">Profesi / Keahlian Khusus</label>
+            <input type="text" id="formProfesi" class="w-full px-3.5 py-2.5 border border-[#d9c4b3] rounded-xl focus:ring-2 focus:ring-[#b8501d]/50 bg-white" placeholder="Dokter, Guru, Musik, Liturgi">
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-[#ebdcd0] flex justify-end gap-3">
+          <button type="button" onclick="closeModalMember()" class="px-4 py-2.5 rounded-xl border border-[#d9c4b3] text-[#5c4a3e] font-bold hover:bg-[#f6f1eb]">Batal</button>
+          <button type="submit" id="btnSaveMember" class="px-5 py-2.5 rounded-xl btn-terracotta font-bold shadow-md">Simpan Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let currentPage = 1;
+    let searchDebounceTimer = null;
+
+    window.onload = function() {
+      lucide.createIcons();
+      checkSession();
+    };
+
+    function callServer(functionName, payload) {
+      return new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(reject)
+          [functionName](payload);
+      });
+    }
+
+    function checkSession() {
+      const session = localStorage.getItem('sithomas_session');
+      if (session) {
+        currentUser = JSON.parse(session);
+        renderAppUI();
+      } else {
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('appSection').classList.add('hidden');
+      }
+    }
+
+    function switchLoginTab(type) {
+      document.getElementById('loginType').value = type;
+      if (type === 'admin') {
+        document.getElementById('tabAdmin').className = 'flex-1 py-2.5 text-xs font-bold rounded-xl transition-all shadow-sm bg-white text-[#b8501d]';
+        document.getElementById('tabUmat').className = 'flex-1 py-2.5 text-xs font-bold rounded-xl transition-all text-[#736053]';
+        document.getElementById('fieldAdmin').classList.remove('hidden');
+        document.getElementById('fieldUmat').classList.add('hidden');
+        document.getElementById('fieldPassword').classList.remove('hidden');
+      } else {
+        document.getElementById('tabUmat').className = 'flex-1 py-2.5 text-xs font-bold rounded-xl transition-all shadow-sm bg-white text-[#b8501d]';
+        document.getElementById('tabAdmin').className = 'flex-1 py-2.5 text-xs font-bold rounded-xl transition-all text-[#736053]';
+        document.getElementById('fieldAdmin').classList.add('hidden');
+        document.getElementById('fieldUmat').classList.remove('hidden');
+        document.getElementById('fieldPassword').classList.add('hidden');
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const type = document.getElementById('loginType').value;
+      const payload = {
+        type: type,
+        usernameOrPin: type === 'admin' ? document.getElementById('loginUsername').value : document.getElementById('loginPin').value,
+        password: document.getElementById('loginPassword').value
+      };
+
+      const btn = document.getElementById('btnLogin');
+      btn.disabled = true;
+      btn.innerHTML = 'Memproses...';
+
+      try {
+        const res = await callServer('login', payload);
+        if (res && res.success) {
+          currentUser = res.data;
+          localStorage.setItem('sithomas_session', JSON.stringify(currentUser));
+          renderAppUI();
+        } else {
+          alert(res ? res.message : 'Login gagal');
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan server: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Masuk Aplikasi';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('sithomas_session');
+      currentUser = null;
+      document.getElementById('appSection').classList.add('hidden');
+      document.getElementById('loginSection').classList.remove('hidden');
+    }
+
+    function renderAppUI() {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('appSection').classList.remove('hidden');
+      document.getElementById('userName').innerText = currentUser.name;
+      document.getElementById('userRoleBadge').innerText = currentUser.role === 'admin' ? 'Administrator' : 'Umat / Kepala Keluarga';
+      document.getElementById('userInitial').innerText = currentUser.name.charAt(0).toUpperCase();
+
+      if (currentUser.role === 'umat') {
+        document.getElementById('filterKKContainer').classList.add('hidden');
+      } else {
+        document.getElementById('filterKKContainer').classList.remove('hidden');
+        fetchKKList();
+      }
+
+      navTo('dashboard');
+    }
+
+    function navTo(view) {
+      document.getElementById('viewDashboard').classList.add('hidden');
+      document.getElementById('viewMembers').classList.add('hidden');
+      document.getElementById('navDashboard').className = 'w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl text-[#5c4a3e] hover:bg-[#f3e7dc] transition-all';
+      document.getElementById('navMembers').className = 'w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl text-[#5c4a3e] hover:bg-[#f3e7dc] transition-all';
+
+      if (view === 'dashboard') {
+        document.getElementById('viewDashboard').classList.remove('hidden');
+        document.getElementById('navDashboard').className = 'w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl sidebar-active transition-all';
+        loadDashboardSummary();
+      } else if (view === 'members') {
+        document.getElementById('viewMembers').classList.remove('hidden');
+        document.getElementById('navMembers').className = 'w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl sidebar-active transition-all';
+        loadMembers(1);
+      }
+    }
+
+    async function loadDashboardSummary() {
+      try {
+        const res = await callServer('getDashboardSummary', {});
+        if (res && res.success && res.data) {
+          document.getElementById('dashTotalUmat').innerText = res.data.totalUmat || 0;
+          document.getElementById('dashTotalKK').innerText = res.data.totalKK || 0;
+          document.getElementById('dashTotalKepala').innerText = res.data.totalKepalaKeluarga || 0;
+        }
+      } catch (e) {}
+    }
+
+    async function fetchKKList() {
+      try {
+        const res = await callServer('getFamilyKKList', {});
+        if (res && res.success && Array.isArray(res.data)) {
+          const filterSelect = document.getElementById('filterKK');
+          const formSelect = document.getElementById('formSelectKK');
+          
+          filterSelect.innerHTML = '<option value="">-- Semua Kartu Keluarga --</option>';
+          formSelect.innerHTML = '<option value="">-- Atau Pilih KK Terdaftar --</option>';
+
+          res.data.forEach(kk => {
+            const optText = `${kk.no_kk} (${kk.kepala_keluarga})`;
+            filterSelect.innerHTML += `<option value="${kk.no_kk}">${optText}</option>`;
+            formSelect.innerHTML += `<option value="${kk.no_kk}">${optText}</option>`;
+          });
+        }
+      } catch (e) {}
+    }
+
+    function syncSelectedKK() {
+      const val = document.getElementById('formSelectKK').value;
+      if (val) document.getElementById('formNoKK').value = val;
+    }
+
+    function debounceSearch() {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => loadMembers(1), 400);
+    }
+
+    async function loadMembers(page) {
+      currentPage = page || 1;
+      const tbody = document.getElementById('memberTableBody');
+      tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-[#8a7261]">Memuat data...</td></tr>`;
+
+      const params = {
+        page: currentPage,
+        limit: 10,
+        search: document.getElementById('searchInput').value,
+        filterKK: document.getElementById('filterKK') ? document.getElementById('filterKK').value : '',
+        userRole: currentUser.role,
+        userKK: currentUser.no_kk
+      };
+
+      try {
+        const res = await callServer('getMembers', params);
+        if (res && res.success && res.data && Array.isArray(res.data.rows)) {
+          renderTableRows(res.data.rows);
+          renderPagination(res.data.pagination);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-[#8a7261]">Tidak ada data ditemukan.</td></tr>`;
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-rose-600">Gagal memuat data.</td></tr>`;
+      }
+    }
+
+    function renderTableRows(rows) {
+      const tbody = document.getElementById('memberTableBody');
+      if (rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-[#8a7261]">Data tidak tersedia.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(item => `
+        <tr class="hover:bg-[#f6f1eb] transition-all">
+          <td class="p-4 font-mono text-xs text-[#b8501d] font-bold">${item.no_kk}</td>
+          <td class="p-4">
+            <div class="font-bold text-[#2d241e]">${item.nama_lengkap}</div>
+            <div class="text-[11px] text-[#8a7261]">${item.nama_baptis ? 'Baptis: ' + item.nama_baptis : '-'}</div>
+          </td>
+          <td class="p-4">
+            <span class="px-2.5 py-1 text-[11px] rounded-lg font-bold ${item.hubungan_keluarga.toLowerCase().includes('kepala') ? 'bg-terracotta-soft text-[#b8501d]' : 'bg-[#e8dad0] text-[#5c4a3e]'}">
+              ${item.hubungan_keluarga}
+            </span>
+          </td>
+          <td class="p-4 text-[11px]">
+            <div><span class="text-[#8a7261]">Edu:</span> ${item.pendidikan_terakhir}</div>
+            <div><span class="text-[#8a7261]">Kerja:</span> ${item.pekerjaan}</div>
+          </td>
+          <td class="p-4 text-[11px] text-[#5c4a3e] font-medium">${item.profesi || '-'}</td>
+          <td class="p-4 text-center">
+            <div class="flex items-center justify-center gap-1">
+              <button onclick='editMember(${JSON.stringify(item)})' class="p-1.5 hover:bg-terracotta-soft text-[#b8501d] rounded-lg"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+              ${currentUser.role === 'admin' ? `
+                <button onclick="handleDeleteMember('${item.id}')" class="p-1.5 hover:bg-rose-100 text-rose-700 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+              ` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderPagination(p) {
+      document.getElementById('currentPage').innerText = p.page;
+      document.getElementById('pageInfo').innerText = `Menampilkan ${p.rowsLength || p.total} dari total ${p.total} data`;
+      document.getElementById('btnPrev').disabled = !p.hasPrevPage;
+      document.getElementById('btnNext').disabled = !p.hasNextPage;
+    }
+
+    function changePage(delta) {
+      loadMembers(currentPage + delta);
+    }
+
+    function openModalMember() {
+      document.getElementById('memberForm').reset();
+      document.getElementById('formId').value = '';
+      document.getElementById('modalTitle').innerText = 'Tambah Anggota Keluarga';
+      
+      if (currentUser.role === 'umat') {
+        document.getElementById('formNoKK').value = currentUser.no_kk;
+        document.getElementById('formNoKK').readOnly = true;
+        document.getElementById('formSelectKK').classList.add('hidden');
+      } else {
+        document.getElementById('formNoKK').readOnly = false;
+        document.getElementById('formSelectKK').classList.remove('hidden');
+      }
+
+      document.getElementById('modalMember').classList.remove('hidden');
+    }
+
+    function closeModalMember() {
+      document.getElementById('modalMember').classList.add('hidden');
+    }
+
+    function editMember(item) {
+      openModalMember();
+      document.getElementById('modalTitle').innerText = 'Edit Anggota Keluarga';
+      document.getElementById('formId').value = item.id;
+      document.getElementById('formNoKK').value = item.no_kk;
+      document.getElementById('formHubungan').value = item.hubungan_keluarga;
+      document.getElementById('formNamaLengkap').value = item.nama_lengkap;
+      document.getElementById('formNamaBaptis').value = item.nama_baptis;
+      document.getElementById('formAgama').value = item.agama;
+      document.getElementById('formStatusKawin').value = item.status_perkawinan;
+      document.getElementById('formPendidikan').value = item.pendidikan_terakhir;
+      document.getElementById('formPekerjaan').value = item.pekerjaan;
+      document.getElementById('formProfesi').value = item.profesi;
+    }
+
+    async function handleSaveMember(e) {
+      e.preventDefault();
+      const payload = {
+        id: document.getElementById('formId').value,
+        no_kk: document.getElementById('formNoKK').value,
+        hubungan_keluarga: document.getElementById('formHubungan').value,
+        nama_lengkap: document.getElementById('formNamaLengkap').value,
+        nama_baptis: document.getElementById('formNamaBaptis').value,
+        agama: document.getElementById('formAgama').value,
+        status_perkawinan: document.getElementById('formStatusKawin').value,
+        pendidikan_terakhir: document.getElementById('formPendidikan').value,
+        pekerjaan: document.getElementById('formPekerjaan').value,
+        profesi: document.getElementById('formProfesi').value
+      };
+
+      const btn = document.getElementById('btnSaveMember');
+      btn.disabled = true;
+      btn.innerText = 'Menyimpan...';
+
+      try {
+        const res = await callServer('saveMember', payload);
+        if (res && res.success) {
+          alert('Data berhasil disimpan!');
+          closeModalMember();
+          if (currentUser.role === 'admin') fetchKKList();
+          loadMembers(currentPage);
+        } else {
+          alert(res ? res.message : 'Gagal menyimpan data');
+        }
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Simpan Data';
+      }
+    }
+
+    async function handleDeleteMember(id) {
+      if (!confirm('Apakah Anda yakin ingin menghapus data anggota ini?')) return;
+      try {
+        const res = await callServer('deleteMember', id);
+        if (res && res.success) {
+          alert('Data berhasil dihapus');
+          loadMembers(currentPage);
+        } else {
+          alert(res ? res.message : 'Gagal menghapus');
+        }
+      } catch (e) {
+        alert('Kesalahan server: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>
